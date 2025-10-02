@@ -260,12 +260,22 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        this.predictedSign.textContent = data.sign;
+                        // Display both localized text and English sign
+                        let displayText;
+                        if (data.localized_text && data.localized_text !== data.sign) {
+                            // Show localized text with English in parentheses
+                            displayText = `${data.localized_text} (${data.sign})`;
+                        } else {
+                            // If no localization or same as English, just show the sign
+                            displayText = data.sign;
+                        }
+                        this.predictedSign.textContent = displayText;
                         this.confidence.textContent = `Confidence: ${(data.confidence * 100).toFixed(2)}%`;
                         
                         if (this.voiceCheckbox.checked) {
                             // Use localized text if available, otherwise use the sign itself
-                            this.speak(data.sign);
+                            const textToSpeak = data.localized_text || data.sign;
+                            this.speak(textToSpeak);
                         }
                         
                         this.showStatus('Prediction complete', 'success');
@@ -282,16 +292,16 @@
                 });
             }
             
-            // Improved speak method with better handling of numeric values
+            // Improved speak method - now receives already localized text from backend
             speak(text) {
                 const selectedLanguage = this.languageSelect.value;
                 
-                // Improved check for numbers to ensure string comparison works correctly
-                if (selectedLanguage !== 'en-US' && !isNaN(text) && String(text).match(/^[1-9]$/)) {
-                    // Always use Google TTS for non-English numbers
+                // Use Google TTS for non-English languages (already localized text)
+                if (selectedLanguage !== 'en-US') {
+                    // Use Google TTS for non-English languages
                     this.useGoogleTTS(String(text), selectedLanguage);
                 } else {
-                    // For English or non-numbers, use browser speech
+                    // For English, use browser speech
                     this.useBrowserSpeech(text, selectedLanguage);
                 }
             }

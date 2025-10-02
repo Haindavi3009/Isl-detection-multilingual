@@ -35,14 +35,46 @@ log.setLevel(logging.ERROR)
 
 # You have correctly moved the dictionaries here. This is perfect.
 language_mappings = {
-    'en-US': { '1': 'One', '2': 'Two', '3': 'Three', '4': 'Four', '5': 'Five', '6': 'Six', '7': 'Seven', '8': 'Eight', '9': 'Nine' },
-    'te-IN': { '1': 'ఒకటి', '2': 'రెండు', '3': 'మూడు', '4': 'నాలుగు', '5': 'ఐదు', '6': 'ఆరు', '7': 'ఏడు', '8': 'ఎనిమిది', '9': 'తొమ్మిది' },
-    'hi-IN': { '1': 'एक', '2': 'दो', '3': 'तीन', '4': 'चार', '5': 'पांच', '6': 'छह', '7': 'सात', '8': 'आठ', '9': 'नौ' },
-    'ml-IN': { '1': 'ഒന്ന്', '2': 'രണ്ട്', '3': 'മൂന്ന്', '4': 'നാല്', '5': 'അഞ്ച്', '6': 'ആറ്', '7': 'ഏഴ്', '8': 'എട്ട്', '9': 'ഒമ്പത്' },
-    'ta-IN': { '1': 'ஒன்று', '2': 'இரண்டு', '3': 'மூன்று', '4': 'நான்கு', '5': 'ஐந்து', '6': 'ஆறு', '7': 'ஏழு', '8': 'எட்டு', '9': 'ஒன்பது' },
-    'kn-IN': { '1': 'ಒಂದು', '2': 'ಎರಡು', '3': 'ಮೂರು', '4': 'ನಾಲ್ಕು', '5': 'ಐದು', '6': 'ಆರು', '7': 'ಏಳು', '8': 'ಎಂಟು', '9': 'ಒಂಬತ್ತು' },
-    'bn-IN': { '1': 'এক', '2': 'দুই', '3': 'তিন', '4': 'চার', '5': 'পাঁচ', '6': 'ছয়', '7': 'সাত', '8': 'আট', '9': 'নয়' },
-    'mr-IN': { '1': 'एक', '2': 'दोन', '3': 'तीन', '4': 'चार', '5': 'पाच', '6': 'सहा', '7': 'सात', '8': 'आठ', '9': 'नऊ' }
+    'en-US': { 
+        '1': 'One', '2': 'Two', '3': 'Three', '4': 'Four', '5': 'Five', '6': 'Six', '7': 'Seven', '8': 'Eight', '9': 'Nine',
+        'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'E': 'E', 'F': 'F', 'G': 'G', 'H': 'H', 'I': 'I', 'J': 'J', 'K': 'K', 'L': 'L', 'M': 'M',
+        'N': 'N', 'O': 'O', 'P': 'P', 'Q': 'Q', 'R': 'R', 'S': 'S', 'T': 'T', 'U': 'U', 'V': 'V', 'W': 'W', 'X': 'X', 'Y': 'Y', 'Z': 'Z'
+    },
+    'te-IN': { 
+        '1': 'ఒకటి', '2': 'రెండు', '3': 'మూడు', '4': 'నాలుగు', '5': 'ఐదు', '6': 'ఆరు', '7': 'ఏడు', '8': 'ఎనిమిది', '9': 'తొమ్మిది',
+        'A': 'ఎ', 'B': 'బీ', 'C': 'సీ', 'D': 'డీ', 'E': 'ఈ', 'F': 'ఎఫ్', 'G': 'జీ', 'H': 'ఎచ్', 'I': 'ఐ', 'J': 'జే', 'K': 'కే', 'L': 'ఎల్', 'M': 'ఎం',
+        'N': 'ఎన్', 'O': 'ఓ', 'P': 'పీ', 'Q': 'క్యూ', 'R': 'ఆర్', 'S': 'ఎస్', 'T': 'టీ', 'U': 'యూ', 'V': 'వీ', 'W': 'డబ్ల్యూ', 'X': 'ఎక్స్', 'Y': 'వై', 'Z': 'జెడ్'
+    },
+    'hi-IN': { 
+        '1': 'एक', '2': 'दो', '3': 'तीन', '4': 'चार', '5': 'पांच', '6': 'छह', '7': 'सात', '8': 'आठ', '9': 'नौ',
+        'A': 'ए', 'B': 'बी', 'C': 'सी', 'D': 'डी', 'E': 'ई', 'F': 'एफ', 'G': 'जी', 'H': 'एच', 'I': 'आई', 'J': 'जे', 'K': 'के', 'L': 'एल', 'M': 'एम',
+        'N': 'एन', 'O': 'ओ', 'P': 'पी', 'Q': 'क्यू', 'R': 'आर', 'S': 'एस', 'T': 'टी', 'U': 'यू', 'V': 'वी', 'W': 'डब्ल्यू', 'X': 'एक्स', 'Y': 'वाई', 'Z': 'जेड'
+    },
+    'ml-IN': { 
+        '1': 'ഒന്ന്', '2': 'രണ്ട്', '3': 'മൂന്ന്', '4': 'നാല്', '5': 'അഞ്ച്', '6': 'ആറ്', '7': 'ഏഴ്', '8': 'എട്ട്', '9': 'ഒമ്പത്',
+        'A': 'എ', 'B': 'ബി', 'C': 'സി', 'D': 'ഡി', 'E': 'ഇ', 'F': 'എഫ്', 'G': 'ജി', 'H': 'എച്ച്', 'I': 'ഐ', 'J': 'ജെ', 'K': 'കെ', 'L': 'എല്', 'M': 'എം',
+        'N': 'എന്', 'O': 'ഓ', 'P': 'പി', 'Q': 'ക്യു', 'R': 'ആര്', 'S': 'എസ്', 'T': 'ടി', 'U': 'യു', 'V': 'വി', 'W': 'ഡബ്ല്യു', 'X': 'എക്സ്', 'Y': 'വൈ', 'Z': 'സെഡ്'
+    },
+    'ta-IN': { 
+        '1': 'ஒன்று', '2': 'இரண்டு', '3': 'மூன்று', '4': 'நான்கு', '5': 'ஐந்து', '6': 'ஆறு', '7': 'ஏழு', '8': 'எட்டு', '9': 'ஒன்பது',
+        'A': 'ஏ', 'B': 'பி', 'C': 'சி', 'D': 'டி', 'E': 'ஈ', 'F': 'எஃப்', 'G': 'ஜி', 'H': 'எச்', 'I': 'ஐ', 'J': 'ஜே', 'K': 'கே', 'L': 'எல்', 'M': 'எம்',
+        'N': 'என்', 'O': 'ஓ', 'P': 'பி', 'Q': 'க்யூ', 'R': 'ஆர்', 'S': 'எஸ்', 'T': 'டி', 'U': 'யூ', 'V': 'வி', 'W': 'டபிள்யூ', 'X': 'எக்ஸ்', 'Y': 'வை', 'Z': 'ஜெட்'
+    },
+    'kn-IN': { 
+        '1': 'ಒಂದು', '2': 'ಎರಡು', '3': 'ಮೂರು', '4': 'ನಾಲ್ಕು', '5': 'ಐದು', '6': 'ಆರು', '7': 'ಏಳು', '8': 'ಎಂಟು', '9': 'ಒಂಬತ್ತು',
+        'A': 'ಎ', 'B': 'ಬಿ', 'C': 'ಸಿ', 'D': 'ಡಿ', 'E': 'ಇ', 'F': 'ಎಫ್', 'G': 'ಜಿ', 'H': 'ಎಚ್', 'I': 'ಐ', 'J': 'ಜೆ', 'K': 'ಕೆ', 'L': 'ಎಲ್', 'M': 'ಎಂ',
+        'N': 'ಎನ್', 'O': 'ಓ', 'P': 'ಪಿ', 'Q': 'ಕ್ಯೂ', 'R': 'ಆರ್', 'S': 'ಎಸ್', 'T': 'ಟಿ', 'U': 'ಯೂ', 'V': 'ವಿ', 'W': 'ಡಬ್ಲ್ಯೂ', 'X': 'ಎಕ್ಸ್', 'Y': 'ವೈ', 'Z': 'ಝೆಡ್'
+    },
+    'bn-IN': { 
+        '1': 'এক', '2': 'দুই', '3': 'তিন', '4': 'চার', '5': 'পাঁচ', '6': 'ছয়', '7': 'সাত', '8': 'আট', '9': 'নয়',
+        'A': 'এ', 'B': 'বি', 'C': 'সি', 'D': 'ডি', 'E': 'ই', 'F': 'এফ', 'G': 'জি', 'H': 'এইচ', 'I': 'আই', 'J': 'জে', 'K': 'কে', 'L': 'এল', 'M': 'এম',
+        'N': 'এন', 'O': 'ও', 'P': 'পি', 'Q': 'কিউ', 'R': 'আর', 'S': 'এস', 'T': 'টি', 'U': 'ইউ', 'V': 'ভি', 'W': 'ডাবলিউ', 'X': 'এক্স', 'Y': 'ওয়াই', 'Z': 'জেড'
+    },
+    'mr-IN': { 
+        '1': 'एक', '2': 'दोन', '3': 'तीन', '4': 'चार', '5': 'पाच', '6': 'सहा', '7': 'सात', '8': 'आठ', '9': 'नऊ',
+        'A': 'ए', 'B': 'बी', 'C': 'सी', 'D': 'डी', 'E': 'ई', 'F': 'एफ', 'G': 'जी', 'H': 'एच', 'I': 'आय', 'J': 'जे', 'K': 'के', 'L': 'एल', 'M': 'एम',
+        'N': 'एन', 'O': 'ओ', 'P': 'पी', 'Q': 'क्यू', 'R': 'आर', 'S': 'एस', 'T': 'टी', 'U': 'यू', 'V': 'व्ही', 'W': 'डब्ल्यू', 'X': 'एक्स', 'Y': 'वाय', 'Z': 'झेड'
+    }
 }
 
 short_lang_mappings = {
@@ -114,7 +146,7 @@ hands = mp_hands.Hands(
 # Temporarily redirect stderr during model loading
 original_stderr = sys.stderr
 sys.stderr = DevNull()
-model = tf.keras.models.load_model('D:/isl-appp/Indian-Sign-Language-Detection/model.h5')
+model = tf.keras.models.load_model('model.h5')
 sys.stderr = original_stderr
 
 
@@ -193,19 +225,18 @@ def predict():
             confidence = float(np.max(prediction))
             predicted_sign = alphabet[predicted_class[0]]
             
-            # Get the localized text for the sign
+            # Get the localized text for the sign (both numbers and alphabets)
             localized_text = predicted_sign
             try:
-                # Only try to get localized text if it's a number (1-9)
-                if predicted_sign.isdigit():
-                    if language in language_mappings and predicted_sign in language_mappings[language]:
-                        localized_text = language_mappings[language][predicted_sign]
-                    # Try with short language code if the full code didn't match
-                    elif language.split('-')[0] in short_lang_mappings:
-                        short_lang = language.split('-')[0]
-                        full_lang = short_lang_mappings[short_lang]
-                        if full_lang in language_mappings and predicted_sign in language_mappings[full_lang]:
-                            localized_text = language_mappings[full_lang][predicted_sign]
+                # Try to get localized text for both numbers and alphabets
+                if language in language_mappings and predicted_sign in language_mappings[language]:
+                    localized_text = language_mappings[language][predicted_sign]
+                # Try with short language code if the full code didn't match
+                elif language.split('-')[0] in short_lang_mappings:
+                    short_lang = language.split('-')[0]
+                    full_lang = short_lang_mappings[short_lang]
+                    if full_lang in language_mappings and predicted_sign in language_mappings[full_lang]:
+                        localized_text = language_mappings[full_lang][predicted_sign]
             except Exception as e:
                 # If anything goes wrong with localization, just use the sign itself
                 print(f"Localization error: {str(e)}")
