@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Sign Language Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .camera-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .video-container, .canvas-container {
+            width: 400px;
+            height: 300px;
+            border: 1px solid #ccc;
+            background-color: #000;
+            position: relative;
+        }
+        video, canvas {
+            width: 100%;
+            height: 100%;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .result {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .result h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .sign {
+            font-size: 72px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #4CAF50;
+        }
+        .confidence {
+            font-size: 16px;
+            color: #666;
+        }
+        .status {
+            text-align: center;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status-error {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        .status-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status-info {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+        .options {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        /* Completely hide the debug info box */
+        #debugInfo, #showDebugBtn, .debug-control {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            width: 0 !important;
+            overflow: hidden !important;
+            position: absolute !important;
+            left: -9999px !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Indian Sign Language Detection</h1>
+        
+        <div class="camera-container">
+            <div class="video-container">
+                <video id="video" autoplay playsinline></video>
+            </div>
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="startCamera">Start Camera</button>
+            <button id="predictBtn" disabled>Predict Sign</button>
+        </div>
+        
+        <div class="options">
+            <div class="option">
+                <input type="checkbox" id="voiceOutput" checked>
+                <label for="voiceOutput">Voice Output</label>
+            </div>
+            <div class="option">
+                <label for="languageSelect">Language:</label>
+                <select id="languageSelect">
+                    <option value="en-US">English</option>
+                    <option value="hi-IN">Hindi</option>
+                    <option value="te-IN">Telugu</option>
+                    <option value="ml-IN">Malayalam</option>
+                    <option value="ta-IN">Tamil</option>
+                    <option value="kn-IN">Kannada</option>
+                    <option value="bn-IN">Bengali</option>
+                    <option value="mr-IN">Marathi</option>
+                </select>
+                <button id="testVoiceBtn">Test</button>
+            </div>
+        </div>
+        
+        <div class="result">
+            <h2>Detected Sign</h2>
+            <div id="predictedSign" class="sign">-</div>
+            <div id="confidence" class="confidence"></div>
+        </div>
+        
+        <div id="status"></div>
+        
+        <!-- Debug info is now completely hidden -->
+        <div id="debugInfo"></div>
+    </div>
+
+    <script>
+        class ISLDetector {
+            constructor() {
+                this.video = document.getElementById('video');
+                this.canvas = document.getElementById('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.startBtn = document.getElementById('startCamera');
+                this.predictBtn = document.getElementById('predictBtn');
+                this.voiceCheckbox = document.getElementById('voiceOutput');
+                this.languageSelect = document.getElementById('languageSelect');
+                this.testVoiceBtn = document.getElementById('testVoiceBtn');
+                this.predictedSign = document.getElementById('predictedSign');
+                this.confidence = document.getElementById('confidence');
+                this.status = document.getElementById('status');
+                this.debugInfo = document.getElementById('debugInfo');
+                this.stream = null;
+                this.isProcessing = false;
+                this.voices = [];
+                this.initializeEventListeners();
+            }
+            
+            initializeEventListeners() {
+                this.startBtn.addEventListener('click', () => this.toggleCamera());
+                this.predictBtn.addEventListener('click', () => this.predictSign());
+                this.testVoiceBtn.addEventListener('click', () => this.testSpeech());
+            }
+            
+            async toggleCamera() {
+                if (this.stream) {
+                    this.stopCamera();
+                } else {
+                    await this.startCamera();
+                }
+            }
+            
+            async startCamera() {
+                try {
+                    this.stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            width: { ideal: 640 },
+                            height: { ideal: 480 }
+                        },
+                        audio: false
+                    });
+                    
+                    this.video.srcObject = this.stream;
+                    this.startBtn.textContent = 'Stop Camera';
+                    this.predictBtn.disabled = false;
+                    this.showStatus('Camera started successfully', 'success');
+                } catch (error) {
+                    this.showStatus(`Error starting camera: ${error.message}`, 'error');
+                }
+            }
+            
+            stopCamera() {
+                if (this.stream) {
+                    this.stream.getTracks().forEach(track => track.stop());
+                    this.video.srcObject = null;
+                    this.stream = null;
+                    this.startBtn.textContent = 'Start Camera';
+                    this.predictBtn.disabled = true;
+                    this.showStatus('Camera stopped', 'info');
+                }
+            }
+            
+            predictSign() {
+                if (!this.stream || this.isProcessing) return;
+                
+                this.isProcessing = true;
+                this.predictBtn.disabled = true;
+                this.showStatus('Analyzing hand sign...', 'info');
+                
+                // Capture current video frame
+                this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+                const imageData = this.canvas.toDataURL('image/jpeg');
+                
+                // Send to server for prediction
+                fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        image: imageData,
+                        language: this.languageSelect.value
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.predictedSign.textContent = data.sign;
+                        this.confidence.textContent = `Confidence: ${(data.confidence * 100).toFixed(2)}%`;
+                        
+                        if (this.voiceCheckbox.checked) {
+                            // Use localized text if available, otherwise use the sign itself
+                            this.speak(data.sign);
+                        }
+                        
+                        this.showStatus('Prediction complete', 'success');
+                    } else {
+                        this.showStatus(`Error: ${data.error}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    this.showStatus(`Error: ${error.message}`, 'error');
+                })
+                .finally(() => {
+                    this.isProcessing = false;
+                    this.predictBtn.disabled = false;
+                });
+            }
+            
+            // Improved speak method with better handling of numeric values
+            speak(text) {
+                const selectedLanguage = this.languageSelect.value;
+                
+                // Improved check for numbers to ensure string comparison works correctly
+                if (selectedLanguage !== 'en-US' && !isNaN(text) && String(text).match(/^[1-9]$/)) {
+                    // Always use Google TTS for non-English numbers
+                    this.useGoogleTTS(String(text), selectedLanguage);
+                } else {
+                    // For English or non-numbers, use browser speech
+                    this.useBrowserSpeech(text, selectedLanguage);
+                }
+            }
+            
+            // Method for using browser speech
+            useBrowserSpeech(text, selectedLanguage) {
+                if ('speechSynthesis' in window) {
+                    // Cancel any existing speech
+                    speechSynthesis.cancel();
+                    
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = selectedLanguage;
+                    
+                    // Simple settings for better clarity
+                    utterance.rate = 0.7;
+                    utterance.pitch = 1;
+                    utterance.volume = 1.0;
+                    
+                    setTimeout(() => {
+                        speechSynthesis.speak(utterance);
+                    }, 100);
+                } else {
+                    // Try Google TTS as fallback
+                    this.useGoogleTTS(text, selectedLanguage);
+                }
+            }
+            
+            // Improved method for using Google TTS via proxy
+            useGoogleTTS(text, lang) {
+                try {
+                    // Get language code in format Google expects (e.g., 'hi' from 'hi-IN')
+                    const langCode = lang.split('-')[0];
+                    
+                    // Special handling for numeric values
+                    const finalText = !isNaN(text) && text >= 1 && text <= 9 ? String(text) : text;
+                    
+                    // Use our proxy endpoint
+                    const url = `/tts?lang=${langCode}&text=${encodeURIComponent(finalText)}`;
+                    
+                    // Method 1: Using Audio API
+                    const audio = new Audio();
+                    audio.src = url;
+                    
+                    // Play the audio
+                    audio.play().catch(e => {
+                        // Try Method 2 if Method 1 fails
+                        this.playAudioWithIframe(url);
+                    });
+                } catch (e) {
+                    console.error("Google TTS error:", e);
+                }
+            }
+            
+            // Fallback method for playing audio
+            playAudioWithIframe(url) {
+                // Create an iframe to load the audio
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = url;
+                
+                // Add to document to load the audio
+                document.body.appendChild(iframe);
+                
+                // Remove after a few seconds
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                }, 5000);
+            }
+            
+            // Improved test speech function for better multilingual testing
+            testSpeech() {
+                const selectedLanguage = this.languageSelect.value;
+                
+                // Always test with "1" which will be converted to the proper word by the server
+                const testText = "1";
+                
+                // Use proper TTS method based on language
+                if (selectedLanguage !== 'en-US') {
+                    this.useGoogleTTS(testText, selectedLanguage);
+                } else {
+                    this.useBrowserSpeech(testText, selectedLanguage);
+                }
+            }
+            
+            // Status message display
+            showStatus(message, type) {
+                this.status.innerHTML = `<div class="status status-${type}">${message}</div>`;
+                setTimeout(() => {
+                    this.status.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new ISLDetector();
+        });
+    </script>
+</body>
+</html>

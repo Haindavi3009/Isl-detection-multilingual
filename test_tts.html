@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TTS Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { padding: 10px; margin: 5px; }
+        select { padding: 5px; }
+        #log { border: 1px solid #ccc; padding: 10px; margin-top: 20px; height: 200px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>Test Text-to-Speech</h1>
+    
+    <div>
+        <select id="language">
+            <option value="en">English</option>
+            <option value="hi">Hindi</option>
+            <option value="te">Telugu</option>
+            <option value="ml">Malayalam</option>
+            <option value="ta">Tamil</option>
+            <option value="kn">Kannada</option>
+            <option value="bn">Bengali</option>
+            <option value="mr">Marathi</option>
+        </select>
+        
+        <input type="text" id="textToSpeak" value="1" placeholder="Text to speak">
+        <button onclick="testTTS()">Play TTS</button>
+        <button onclick="testAllLanguages()">Test All Languages (1-3)</button>
+    </div>
+    
+    <div id="log"></div>
+    
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function testTTS() {
+            const lang = document.getElementById('language').value;
+            const text = document.getElementById('textToSpeak').value;
+            
+            log(`Testing TTS with language: ${lang}, text: ${text}`);
+            
+            // Create the URL for our TTS endpoint
+            const url = `/tts?lang=${lang}&text=${encodeURIComponent(text)}`;
+            playAudio(url);
+        }
+        
+        function testAllLanguages() {
+            const languages = ['en', 'hi', 'te', 'ml', 'ta', 'kn', 'bn', 'mr'];
+            const numbers = ['1', '2', '3'];
+            
+            log('Testing numbers 1-3 in all languages...');
+            
+            // Test each language with numbers 1-3
+            languages.forEach((lang, langIndex) => {
+                setTimeout(() => {
+                    numbers.forEach((num, numIndex) => {
+                        setTimeout(() => {
+                            const url = `/tts?lang=${lang}&text=${num}`;
+                            log(`Testing ${lang}: ${num}`);
+                            playAudio(url);
+                        }, numIndex * 2000); // 2 seconds between numbers
+                    });
+                }, langIndex * 7000); // 7 seconds between languages
+            });
+        }
+        
+        function playAudio(url) {
+            log(`Loading audio from: ${url}`);
+            
+            // Try with the Audio API first
+            const audio = new Audio(url);
+            audio.onerror = (e) => {
+                log(`Audio error: ${e.message || 'Unknown error'}`);
+                // Fall back to iframe method
+                playAudioWithIframe(url);
+            };
+            audio.onloadeddata = () => log('Audio loaded');
+            audio.play().catch(e => {
+                log(`Play error: ${e.message}`);
+                playAudioWithIframe(url);
+            });
+        }
+        
+        function playAudioWithIframe(url) {
+            log('Falling back to iframe method');
+            // Create an iframe to load the audio
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = url;
+            
+            // Add event listeners
+            iframe.onload = () => log('Audio request completed via iframe');
+            iframe.onerror = () => log('Error loading audio via iframe');
+            
+            document.body.appendChild(iframe);
+            setTimeout(() => document.body.removeChild(iframe), 5000);
+        }
+    </script>
+</body>
+</html>

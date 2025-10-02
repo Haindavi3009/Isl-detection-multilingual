@@ -6,9 +6,14 @@ from tensorflow import keras
 import numpy as np
 import pandas as pd
 import string
+import os
+
+# Get the directory where this script is located
+script_dir = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(script_dir, "model.h5")
 
 # load the saved model from file
-model = keras.models.load_model("model.h5")
+model = keras.models.load_model(model_path)
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
