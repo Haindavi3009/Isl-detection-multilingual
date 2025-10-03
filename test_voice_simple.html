@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice Test</title>
+</head>
+<body>
+    <h1>Simple Voice Test</h1>
+    <button id="recordBtn">🎤 Record</button>
+    <div id="result"></div>
+    
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        
+        document.getElementById('recordBtn').addEventListener('click', async () => {
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    
+                    mediaRecorder.ondataavailable = (event) => {
+                        audioChunks.push(event.data);
+                        console.log('Audio chunk:', event.data.size, 'bytes');
+                    };
+                    
+                    mediaRecorder.onstop = async () => {
+                        console.log('Recording stopped, sending to server...');
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        
+                        const formData = new FormData();
+                        formData.append('audio', audioBlob, 'recording.wav');
+                        formData.append('language', 'en');
+                        
+                        try {
+                            const response = await fetch('/speech-to-text', {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            const result = await response.json();
+                            console.log('Server response:', result);
+                            document.getElementById('result').innerHTML = 
+                                `<h3>Result:</h3><pre>${JSON.stringify(result, null, 2)}</pre>`;
+                                
+                        } catch (error) {
+                            console.error('Error:', error);
+                            document.getElementById('result').innerHTML = `Error: ${error.message}`;
+                        }
+                        
+                        // Clean up
+                        stream.getTracks().forEach(track => track.stop());
+                        audioChunks = [];
+                    };
+                    
+                    mediaRecorder.start();
+                    isRecording = true;
+                    document.getElementById('recordBtn').textContent = '🛑 Stop (Recording...)';
+                    
+                    // Auto-stop after 5 seconds
+                    setTimeout(() => {
+                        if (isRecording) {
+                            mediaRecorder.stop();
+                        }
+                    }, 5000);
+                    
+                } catch (error) {
+                    console.error('Error starting recording:', error);
+                    alert('Error: ' + error.message);
+                }
+            } else {
+                mediaRecorder.stop();
+                isRecording = false;
+                document.getElementById('recordBtn').textContent = '🎤 Record';
+            }
+        });
+    </script>
+</body>
+</html>

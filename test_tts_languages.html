@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Language Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-item {
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-item h3 {
+            margin: 0 0 10px 0;
+            color: #555;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .url-display {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin-top: 10px;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔊 TTS Language Test</h1>
+        <p style="text-align: center; color: #666;">Click the buttons to test text-to-speech for different Indian languages</p>
+        
+        <div class="test-item">
+            <h3>Telugu (తెలుగు)</h3>
+            <button onclick="testTTS('ఒకటి', 'te', this)">Test Number "ఒకటి" (One)</button>
+            <button onclick="testTTS('ఎ', 'te', this)">Test Letter "ఎ" (A)</button>
+            <button onclick="testTTS('నమస్కారం', 'te', this)">Test "నమస్కారం" (Hello)</button>
+            <div class="url-display" id="te-url"></div>
+            <div class="status" id="te-status" style="display:none;"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>Malayalam (മലയാളം)</h3>
+            <button onclick="testTTS('ഒന്ന്', 'ml', this)">Test Number "ഒന്ന്" (One)</button>
+            <button onclick="testTTS('എ', 'ml', this)">Test Letter "എ" (A)</button>
+            <button onclick="testTTS('നമസ്കാരം', 'ml', this)">Test "നമസ്കാരം" (Hello)</button>
+            <div class="url-display" id="ml-url"></div>
+            <div class="status" id="ml-status" style="display:none;"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>Tamil (தமிழ்)</h3>
+            <button onclick="testTTS('ஒன்று', 'ta', this)">Test Number "ஒன்று" (One)</button>
+            <button onclick="testTTS('ஏ', 'ta', this)">Test Letter "ஏ" (A)</button>
+            <button onclick="testTTS('வணக்கம்', 'ta', this)">Test "வணக்கம்" (Hello)</button>
+            <div class="url-display" id="ta-url"></div>
+            <div class="status" id="ta-status" style="display:none;"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>Hindi (हिंदी)</h3>
+            <button onclick="testTTS('एक', 'hi', this)">Test Number "एक" (One)</button>
+            <button onclick="testTTS('ए', 'hi', this)">Test Letter "ए" (A)</button>
+            <button onclick="testTTS('नमस्ते', 'hi', this)">Test "नमस्ते" (Hello)</button>
+            <div class="url-display" id="hi-url"></div>
+            <div class="status" id="hi-status" style="display:none;"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>Kannada (ಕನ್ನಡ)</h3>
+            <button onclick="testTTS('ಒಂದು', 'kn', this)">Test Number "ಒಂದು" (One)</button>
+            <button onclick="testTTS('ಎ', 'kn', this)">Test Letter "ಎ" (A)</button>
+            <button onclick="testTTS('ನಮಸ್ಕಾರ', 'kn', this)">Test "ನಮಸ್ಕಾರ" (Hello)</button>
+            <div class="url-display" id="kn-url"></div>
+            <div class="status" id="kn-status" style="display:none;"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>Bengali (বাংলা)</h3>
+            <button onclick="testTTS('এক', 'bn', this)">Test Number "এক" (One)</button>
+            <button onclick="testTTS('এ', 'bn', this)">Test Letter "এ" (A)</button>
+            <button onclick="testTTS('নমস্কার', 'bn', this)">Test "নমস্কার" (Hello)</button>
+            <div class="url-display" id="bn-url"></div>
+            <div class="status" id="bn-status" style="display:none;"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>Marathi (मराठी)</h3>
+            <button onclick="testTTS('एक', 'mr', this)">Test Number "एक" (One)</button>
+            <button onclick="testTTS('ए', 'mr', this)">Test Letter "ए" (A)</button>
+            <button onclick="testTTS('नमस्कार', 'mr', this)">Test "नमस्कार" (Hello)</button>
+            <div class="url-display" id="mr-url"></div>
+            <div class="status" id="mr-status" style="display:none;"></div>
+        </div>
+
+        <div class="test-item">
+            <h3>English</h3>
+            <button onclick="testTTS('One', 'en', this)">Test "One"</button>
+            <button onclick="testTTS('Hello', 'en', this)">Test "Hello"</button>
+            <div class="url-display" id="en-url"></div>
+            <div class="status" id="en-status" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        function testTTS(text, lang, button) {
+            console.clear();
+            console.log('=== TTS Test Started ===');
+            console.log('Text:', text);
+            console.log('Language:', lang);
+            
+            const urlDisplay = document.getElementById(`${lang}-url`);
+            const statusDisplay = document.getElementById(`${lang}-status`);
+            
+            // Build TTS URL
+            const ttsUrl = `/tts?text=${encodeURIComponent(text)}&lang=${lang}`;
+            urlDisplay.textContent = `URL: ${ttsUrl}`;
+            console.log('TTS URL:', ttsUrl);
+            
+            // Show loading status
+            statusDisplay.style.display = 'block';
+            statusDisplay.className = 'status info';
+            statusDisplay.textContent = '⏳ Loading audio...';
+            
+            // Create audio element
+            const audio = new Audio();
+            audio.preload = 'auto';
+            
+            audio.onloadstart = () => {
+                console.log('Audio loading started...');
+            };
+            
+            audio.onloadedmetadata = () => {
+                console.log('Audio metadata loaded');
+                console.log('Duration:', audio.duration);
+            };
+            
+            audio.onloadeddata = () => {
+                console.log('Audio data loaded successfully');
+                statusDisplay.className = 'status info';
+                statusDisplay.textContent = '▶️ Playing audio...';
+            };
+            
+            audio.onplay = () => {
+                console.log('Audio playback started');
+                statusDisplay.className = 'status success';
+                statusDisplay.textContent = '✅ Playing: ' + text;
+            };
+            
+            audio.onended = () => {
+                console.log('Audio playback ended');
+                statusDisplay.className = 'status success';
+                statusDisplay.textContent = '✅ Completed: ' + text;
+            };
+            
+            audio.onerror = (e) => {
+                console.error('Audio error occurred');
+                console.error('Error event:', e);
+                console.error('Audio error object:', audio.error);
+                if (audio.error) {
+                    console.error('Error code:', audio.error.code);
+                    console.error('Error message:', audio.error.message);
+                    
+                    const errorMessages = {
+                        1: 'MEDIA_ERR_ABORTED - The fetching process was aborted',
+                        2: 'MEDIA_ERR_NETWORK - A network error occurred',
+                        3: 'MEDIA_ERR_DECODE - An error occurred while decoding',
+                        4: 'MEDIA_ERR_SRC_NOT_SUPPORTED - The audio format is not supported'
+                    };
+                    
+                    statusDisplay.className = 'status error';
+                    statusDisplay.textContent = `❌ Error: ${errorMessages[audio.error.code] || 'Unknown error'}`;
+                }
+            };
+            
+            // Set source and load
+            audio.src = ttsUrl;
+            audio.load();
+            
+            // Attempt to play
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => {
+                        console.log('Play promise resolved - playback started');
+                    })
+                    .catch(err => {
+                        console.error('Play promise rejected');
+                        console.error('Error name:', err.name);
+                        console.error('Error message:', err.message);
+                        statusDisplay.className = 'status error';
+                        statusDisplay.textContent = `❌ Playback error: ${err.message}`;
+                    });
+            }
+            
+            console.log('=== TTS Test Setup Complete ===');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Sign Language Detection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6b8e23, #9acd32);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .text-to-sign-section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(85, 107, 47, 0.15);
+        }
+
+        .text-to-sign-section h2 {
+            text-align: center;
+            color: #556b2f;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        .input-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #textInput {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 20px;
+            font-size: 16px;
+            border: 2px solid #9acd32;
+            border-radius: 25px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #textInput:focus {
+            border-color: #6b8e23;
+            box-shadow: 0 0 15px rgba(154, 205, 50, 0.3);
+        }
+
+        button {
+            padding: 15px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .voice-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            min-width: 60px;
+        }
+
+        .voice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .voice-btn.listening {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        #convertToSignBtn {
+            background: linear-gradient(135deg, #9acd32, #6b8e23);
+            color: white;
+        }
+
+        #convertToSignBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(154, 205, 50, 0.4);
+        }
+
+        .sign-display {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        #signImage {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        #signText {
+            font-size: 2rem;
+            color: #6b8e23;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .language-selector {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .language-selector select {
+            padding: 10px 15px;
+            font-size: 16px;
+            border: 2px solid #9acd32;
+            border-radius: 10px;
+            background: white;
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 15px;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤟 Indian Sign Language Detection</h1>
+            <p>Convert text to sign language with voice input support</p>
+        </div>
+
+        <div class="main-content">
+            <div class="text-to-sign-section">
+                <h2>Text to Sign</h2>
+                
+                <div class="language-selector">
+                    <label for="languageSelect">Language: </label>
+                    <select id="languageSelect">
+                        <option value="en-US">English</option>
+                        <option value="hi-IN">Hindi</option>
+                        <option value="te-IN">Telugu</option>
+                        <option value="ml-IN">Malayalam</option>
+                        <option value="ta-IN">Tamil</option>
+                        <option value="kn-IN">Kannada</option>
+                        <option value="bn-IN">Bengali</option>
+                        <option value="mr-IN">Marathi</option>
+                    </select>
+                </div>
+                
+                <div class="input-controls">
+                    <input type="text" id="textInput" placeholder="Type A-Z or 1-9" maxlength="10">
+                    <button id="voiceInputBtn" class="voice-btn" title="Voice Input">
+                        🎤
+                    </button>
+                    <button id="convertToSignBtn">Show Sign</button>
+                </div>
+
+                <div class="sign-display">
+                    <div id="signImageContainer">
+                        <img id="signImage" style="display:none;">
+                        <div id="signText"></div>
+                    </div>
+                </div>
+
+                <div id="status" class="status" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class TextToSignConverter {
+            constructor() {
+                this.textInput = document.getElementById('textInput');
+                this.convertBtn = document.getElementById('convertToSignBtn');
+                this.voiceBtn = document.getElementById('voiceInputBtn');
+                this.signImage = document.getElementById('signImage');
+                this.signText = document.getElementById('signText');
+                this.languageSelect = document.getElementById('languageSelect');
+                this.status = document.getElementById('status');
+                
+                this.isRecording = false;
+                this.mediaRecorder = null;
+                this.audioChunks = [];
+                
+                this.initializeEventListeners();
+            }
+            
+            initializeEventListeners() {
+                this.convertBtn.addEventListener('click', () => this.convertTextToSign());
+                this.textInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.convertTextToSign();
+                });
+                this.voiceBtn.addEventListener('click', () => this.toggleVoiceInput());
+            }
+
+            showStatus(message, type = 'success') {
+                this.status.textContent = message;
+                this.status.className = `status ${type}`;
+                this.status.style.display = 'block';
+                
+                setTimeout(() => {
+                    this.status.style.display = 'none';
+                }, 3000);
+            }
+
+            async toggleVoiceInput() {
+                if (this.isRecording) {
+                    this.stopRecording();
+                } else {
+                    await this.startRecording();
+                }
+            }
+
+            async startRecording() {
+                try {
+                    console.log('🎤 Starting voice recording...');
+                    
+                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                        alert('Voice recording not supported in this browser. Please use Chrome, Firefox, or Edge.');
+                        return;
+                    }
+
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: {
+                            sampleRate: 44100,
+                            channelCount: 1
+                        }
+                    });
+
+                    this.mediaRecorder = new MediaRecorder(stream);
+                    this.audioChunks = [];
+
+                    this.mediaRecorder.ondataavailable = (event) => {
+                        this.audioChunks.push(event.data);
+                        console.log('📊 Audio chunk received:', event.data.size, 'bytes');
+                    };
+
+                    this.mediaRecorder.onstop = () => {
+                        console.log('🔄 Processing recording...');
+                        this.processRecording();
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+
+                    this.mediaRecorder.start();
+                    this.isRecording = true;
+                    
+                    this.voiceBtn.classList.add('listening');
+                    this.voiceBtn.textContent = '🛑';
+                    this.textInput.placeholder = '🎤 Recording... (say A-Z or 1-9)';
+                    
+                    this.showStatus('Recording... Say a letter A-Z or number 1-9', 'success');
+                    
+                    // Auto-stop after 5 seconds
+                    setTimeout(() => {
+                        if (this.isRecording) {
+                            this.stopRecording();
+                        }
+                    }, 5000);
+
+                } catch (error) {
+                    console.error('❌ Recording error:', error);
+                    
+                    if (error.name === 'NotAllowedError') {
+                        alert('Microphone permission denied. Please allow microphone access and try again.');
+                    } else if (error.name === 'NotFoundError') {
+                        alert('No microphone found. Please connect a microphone.');
+                    } else {
+                        alert('Could not start recording: ' + error.message);
+                    }
+                    
+                    this.resetVoiceButton();
+                }
+            }
+
+            stopRecording() {
+                console.log('🛑 Stopping recording...');
+                
+                if (this.mediaRecorder && this.isRecording) {
+                    this.mediaRecorder.stop();
+                }
+                
+                this.resetVoiceButton();
+            }
+
+            resetVoiceButton() {
+                this.isRecording = false;
+                this.voiceBtn.classList.remove('listening');
+                this.voiceBtn.textContent = '🎤';
+                this.textInput.placeholder = 'Type A-Z or 1-9';
+            }
+
+            async processRecording() {
+                if (this.audioChunks.length === 0) {
+                    console.error('❌ No audio recorded');
+                    this.showStatus('No audio recorded. Please try again.', 'error');
+                    return;
+                }
+
+                console.log('📦 Creating audio blob...');
+                const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+                console.log('📊 Audio blob size:', audioBlob.size, 'bytes');
+
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recording.wav');
+                formData.append('language', this.languageSelect.value.split('-')[0]);
+
+                try {
+                    this.showStatus('Processing speech with AI...', 'success');
+                    this.textInput.disabled = true;
+
+                    console.log('📤 Sending to speech recognition API...');
+                    
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => {
+                        controller.abort();
+                    }, 15000); // 15 second timeout
+
+                    const response = await fetch('/speech-to-text', {
+                        method: 'POST',
+                        body: formData,
+                        signal: controller.signal
+                    });
+
+                    clearTimeout(timeoutId);
+                    console.log('📥 Response received, status:', response.status);
+
+                    if (!response.ok) {
+                        throw new Error(`Server error: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    console.log('🔍 Speech recognition result:', result);
+
+                    if (result.success) {
+                        const extractedChar = result.extracted_character || result.text;
+                        
+                        if (this.isValidCharacter(extractedChar)) {
+                            console.log('✅ Valid character recognized:', extractedChar);
+                            this.textInput.value = extractedChar;
+                            this.convertTextToSign();
+                            this.showStatus(`Recognized: "${extractedChar}"`, 'success');
+                        } else {
+                            console.log('❌ Invalid character:', extractedChar);
+                            this.showStatus(`Heard: "${result.original_text}" - Please say A-Z or 1-9`, 'error');
+                        }
+                    } else {
+                        console.error('❌ Speech recognition failed:', result.error);
+                        this.showStatus('Speech recognition failed. Please try again.', 'error');
+                    }
+
+                } catch (error) {
+                    console.error('❌ Processing error:', error);
+                    
+                    if (error.name === 'AbortError') {
+                        this.showStatus('Speech processing timed out. Please try again.', 'error');
+                    } else {
+                        this.showStatus('Error processing speech. Please try again.', 'error');
+                    }
+                } finally {
+                    this.textInput.disabled = false;
+                }
+            }
+
+            isValidCharacter(char) {
+                if (!char || char.length !== 1) return false;
+                const upperChar = char.toUpperCase();
+                return (upperChar >= 'A' && upperChar <= 'Z') || (char >= '1' && char <= '9');
+            }
+
+            getNumberWordSuggestion(inputWord, language) {
+                const numberWords = {
+                    'te-IN': {
+                        'okati': '1', 'oka': '1',
+                        'rendu': '2', 'renda': '2',
+                        'moodu': '3', 'mudo': '3',
+                        'nalugu': '4', 'nalgu': '4',
+                        'aidu': '5', 'ayidu': '5',
+                        'aaru': '6', 'aru': '6',
+                        'eadu': '7', 'yadu': '7',
+                        'enimidi': '8', 'yenimidi': '8',
+                        'tommidi': '9', 'tomidi': '9'
+                    },
+                    'hi-IN': {
+                        'ek': '1', 'एक': '1',
+                        'do': '2', 'दो': '2',
+                        'teen': '3', 'तीन': '3',
+                        'char': '4', 'चार': '4',
+                        'panch': '5', 'पांच': '5',
+                        'che': '6', 'छह': '6',
+                        'saat': '7', 'सात': '7',
+                        'aath': '8', 'आठ': '8',
+                        'nau': '9', 'नौ': '9'
+                    },
+                    'en-US': {
+                        'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5',
+                        'six': '6', 'seven': '7', 'eight': '8', 'nine': '9'
+                    }
+                };
+
+                if (numberWords[language] && numberWords[language][inputWord]) {
+                    return numberWords[language][inputWord];
+                }
+
+                for (const lang in numberWords) {
+                    if (numberWords[lang][inputWord]) {
+                        return numberWords[lang][inputWord];
+                    }
+                }
+
+                return null;
+            }
+
+            convertTextToSign() {
+                const inputText = this.textInput.value.trim();
+                if (!inputText) {
+                    this.showSignText('Please enter a character');
+                    return;
+                }
+
+                const currentLang = this.languageSelect.value;
+                
+                // Check for number word suggestions
+                const suggestion = this.getNumberWordSuggestion(inputText.toLowerCase(), currentLang);
+                if (suggestion) {
+                    this.showSignText(`For "${inputText}", please type "${suggestion}" instead`);
+                    return;
+                }
+
+                this.showSignText('Converting...');
+
+                fetch('/text-to-sign', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: inputText,
+                        language: currentLang
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.displaySign(data);
+                        this.showStatus('Sign displayed successfully!', 'success');
+                    } else {
+                        this.showSignText(`Error: ${data.error}`);
+                        this.showStatus(`Error: ${data.error}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    this.showSignText(`Error: ${error.message}`);
+                    this.showStatus(`Error: ${error.message}`, 'error');
+                });
+            }
+
+            displaySign(data) {
+                if (data.image_path) {
+                    this.signImage.src = data.image_path;
+                    this.signImage.style.display = 'block';
+                    this.signText.style.display = 'none';
+                } else {
+                    this.signImage.style.display = 'none';
+                    this.signText.style.display = 'block';
+                }
+
+                const currentLang = this.languageSelect.value;
+                
+                let displayText;
+                switch(currentLang) {
+                    case 'hi-IN':
+                        displayText = `चिह्न: "${data.input_text}"`;
+                        break;
+                    case 'te-IN':
+                        displayText = `సంకేతం: "${data.input_text}"`;
+                        break;
+                    case 'ml-IN':
+                        displayText = `ചിഹ്നം: "${data.input_text}"`;
+                        break;
+                    case 'ta-IN':
+                        displayText = `குறி: "${data.input_text}"`;
+                        break;
+                    case 'kn-IN':
+                        displayText = `ಚಿಹ್ನೆ: "${data.input_text}"`;
+                        break;
+                    case 'bn-IN':
+                        displayText = `চিহ্ন: "${data.input_text}"`;
+                        break;
+                    case 'mr-IN':
+                        displayText = `चिन्ह: "${data.input_text}"`;
+                        break;
+                    default:
+                        displayText = `Sign: "${data.input_text}"`;
+                }
+                
+                this.signText.textContent = displayText;
+            }
+
+            showSignText(text) {
+                this.signText.textContent = text;
+                this.signImage.style.display = 'none';
+                this.signText.style.display = 'block';
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            new TextToSignConverter();
+        });
+    </script>
+</body>
+</html>

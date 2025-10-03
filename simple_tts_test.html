@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple TTS Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background: #4CAF50;
+            color: white;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #log {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .log-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔊 Simple Google TTS Test</h1>
+    <p>Click buttons to test Google TTS directly:</p>
+    
+    <button onclick="testTTS('Five', 'en')">Test English "Five"</button>
+    <button onclick="testTTS('ఐదు', 'te')">Test Telugu "ఐదు"</button>
+    <button onclick="testTTS('ഐഞ്ച്', 'ml')">Test Malayalam "ഐഞ്ച്"</button>
+    <button onclick="testTTS('ஐந்து', 'ta')">Test Tamil "ஐந்து"</button>
+    
+    <div id="log"></div>
+
+    <script>
+        const log = document.getElementById('log');
+        
+        function addLog(message, type = 'info') {
+            const item = document.createElement('div');
+            item.className = 'log-item';
+            const time = new Date().toLocaleTimeString();
+            const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+            item.innerHTML = `<strong>${time}</strong> ${icon} ${message}`;
+            log.insertBefore(item, log.firstChild);
+        }
+        
+        function testTTS(text, lang) {
+            addLog(`Testing TTS: "${text}" in language: ${lang}`);
+            
+            const ttsUrl = `/tts?text=${encodeURIComponent(text)}&lang=${lang}`;
+            addLog(`URL: ${ttsUrl}`);
+            
+            // Create audio element
+            const audio = new Audio();
+            
+            audio.onloadstart = () => {
+                addLog('Loading audio...');
+            };
+            
+            audio.onloadeddata = () => {
+                addLog('Audio data loaded!', 'success');
+            };
+            
+            audio.oncanplay = () => {
+                addLog(`Audio ready to play (duration: ${audio.duration}s)`, 'success');
+            };
+            
+            audio.onplay = () => {
+                addLog(`Playing: "${text}"`, 'success');
+            };
+            
+            audio.onended = () => {
+                addLog(`Finished playing: "${text}"`, 'success');
+            };
+            
+            audio.onerror = (e) => {
+                const errorCodes = {
+                    1: 'ABORTED',
+                    2: 'NETWORK_ERROR',
+                    3: 'DECODE_ERROR',
+                    4: 'SRC_NOT_SUPPORTED'
+                };
+                const errorCode = audio.error ? audio.error.code : 'UNKNOWN';
+                const errorName = errorCodes[errorCode] || 'UNKNOWN';
+                addLog(`Audio error: ${errorName} (code: ${errorCode})`, 'error');
+            };
+            
+            // Set source and play
+            audio.src = ttsUrl;
+            audio.load();
+            
+            setTimeout(() => {
+                audio.play()
+                    .then(() => {
+                        addLog('Play() succeeded!', 'success');
+                    })
+                    .catch(err => {
+                        addLog(`Play() failed: ${err.message}`, 'error');
+                    });
+            }, 100);
+        }
+    </script>
+</body>
+</html>
