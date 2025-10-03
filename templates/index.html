@@ -368,10 +368,7 @@
                 </div>
                 
                 <div class="input-controls">
-                    <input type="text" id="textInput" placeholder="Type text or use voice input 🎤" maxlength="50">
-                    <button id="voiceInputBtn" class="voice-btn" title="Voice Input - Speak to convert">
-                        🎤
-                    </button>
+                    <input type="text" id="textInput" placeholder="type any alphabet or number from 1-9" maxlength="50">
                     <button id="convertToSignBtn">Show Sign</button>
                 </div>
 
@@ -710,7 +707,7 @@
 
             startSpeechRecognition() {
                 try {
-                    console.log('🎤 Starting speech recognition...');
+                    console.log('Type any alphabet or number');
                     
                     // Check for Speech Recognition API
                     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
