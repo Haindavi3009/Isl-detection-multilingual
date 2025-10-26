@@ -1,4 +1,14 @@
 ﻿import os
+# Ensure Matplotlib uses a non-interactive backend and a writable config dir
+# This prevents import-time errors when mediapipe imports matplotlib on headless systems
+os.environ.setdefault('MPLBACKEND', 'Agg')
+mpl_config_dir = os.path.join(os.environ.get('TEMP', os.path.expanduser('~')), 'matplotlib')
+os.environ.setdefault('MPLCONFIGDIR', mpl_config_dir)
+try:
+    os.makedirs(mpl_config_dir, exist_ok=True)
+except Exception:
+    # If creating the folder fails, continue; Matplotlib will try default locations
+    pass
 import cv2
 import numpy as np
 import tensorflow as tf

@@ -1,83 +1,116 @@
+🧠 Indian Sign Language Detection & Translation (A–Z & 1–9 | Multilingual + Bidirectional)
+
+🚀 Overview
+
+This project detects Indian Sign Language (ISL) gestures for A–Z alphabets and 1–9 numbers using Mediapipe and a Feedforward Neural Network (FNN).
+
+Enhancements added:
+
+1.Sign → Text → Voice output
+2.Multilingual support (8 Indian languages)
+3.Text → Sign conversion for single letters and numbers
+Note: Only individual letters and digits are supported; full words or sentences are not recognized.
+**Note:** All output screenshots for this project are provided in the `output_screenshots` folder.
+____________________________________________________________________________________________________________________________
+✨ Key Features
+
+🖐️ Detects ISL alphabets (A–Z) and numbers (1–9) in real-time using webcam
+🔤 Converts detected gestures to text
+🔊 Generates voice output in selected language
+🌐 Supports 8 Indian languages: English, Hindi, Telugu, Malayalam, Tamil, Kannada, Bengali, Marathi
+🔁 Text → Sign conversion (letters and digits only)
+🎥 Real-time detection with Mediapipe and OpenCV
+🧠 Built using Feedforward Neural Network (FNN) for classification
+_______________________________________________________________________________________________________________________________
+🌐 Supported Languages
+
+The system supports both sign-to-text/voice and text-to-sign for the following 8 Indian languages:
+
+English
+Hindi
+Telugu
+Malayalam
+Tamil
+Kannada
+Bengali
+Marathi
+_______________________________________________________________________________________________________________________________
+🏗️ Project Structure
+
+ISL_Multilingual_Translator/
+│
+├── README.md                     
+├── isl_detection.py               → Detect ISL alphabets/numbers (Sign → Text/Voice)
+├── text_to_sign.py                → Convert single letters/numbers to ISL gestures
+├── dataset_keypoint_generation.py → Convert dataset images to hand landmarks
+├── ISL_classifier.ipynb           → Train FNN model
+├── model.h5                       → Trained classifier model
+├── keypoint.csv                   → Hand landmark dataset
+│
+├── utils/
+│   ├── translator.py              → Multilingual translation
+│   └── tts_engine.py              → Text-to-speech
+│
+└── requirements.txt               
+_______________________________________________________________________________________________________________________________
+
+⚙️ Installation
+
+Ensure Python 3.6+ is installed, then install dependencies:
+pip install mediapipe opencv-python numpy tensorflow googletrans==4.0.0-rc1 gTTS playsound
+
+(Optional: use virtual environment)
+
+python -m venv venv
+source venv/bin/activate     # Linux/macOS
+venv\Scripts\activate        # Windows
+_______________________________________________________________________________________________________________________________
+▶️ Usage
+
+Sign → Text + Voice
+python isl_detection.py
 
 
-## Indian Sign Language Detection using Mediapipe
+1.Open webcam
+2.Show A–Z or 1–9 gestures
+3.Recognized letter/number is displayed and spoken
+4.Press ‘q’ to exit
 
-This project is aimed at detecting and recognizing Indian Sign Language (ISL) gestures using the Mediapipe library. The project is implemented in Python.
-![All gestures covered by project](images/allGestures.png)
+Text → Sign
+python text_to_sign.py
 
-### Requirements
 
-To run this project, you will need the following dependencies:
+Enter a single letter or number
+Corresponding ISL gesture is displayed
+_______________________________________________________________________________________________________________________________
 
-- Python 3.6 or higher
-- Mediapipe library
-- OpenCV library
-- Numpy library
 
-### Installation
+🧩 How It Works
 
-1. Install Python 3.6 or higher on your system.
-2. Install the Mediapipe library using the following command:
+1.Mediapipe detects 21 hand landmarks per frame.
+2.Landmarks passed to Feedforward Neural Network (FNN) trained on ISL alphabets & numbers.
+3.Predicted class (letter or number) displayed as text.
+4.Text translated to selected language using Google Translate.
+5.Voice generated via gTTS.
+6.Text → Sign shows ISL gesture for entered letter or number.
+_______________________________________________________________________________________________________________________________
+🧱 Model Details
 
-   ```
-   pip install mediapipe
-   ```
+1.Model: Feedforward Neural Network (FNN)
+2.Input: 42 hand keypoints (x, y coordinates)
+3.Output: 36 classes (A–Z + 1–9)
+4.Frameworks: TensorFlow + Mediapipe
+_______________________________________________________________________________________________________________________________
+🚧 Future Improvements
 
-3. Install the OpenCV library using the following command:
+1.Support for full words/sentences
+2.Add more gesture variations for numbers/letters
+3.Develop mobile/web app
+4.GUI for easier interaction
+_______________________________________________________________________________________________________________________________
+👩‍💻 Author
 
-   ```
-   pip install opencv-python
-   ```
+Sira Haindavi
+GitHub: https://github.com/<your-username>
 
-4. Install the Numpy library using the following command:
-
-   ```
-   pip install numpy
-   ```
-
-### Usage
-
-1. Clone the repository to your local machine.
-
-2. Open the command prompt and navigate to the cloned directory.
-
-3. Run the following command to start the program:
-
-   ```
-   python isl_detection.py
-   ```
-
-4. The program will start and display the video stream from the webcam.
-
-5. To exit the program, press the 'q' key.
-
-### How it works
-
-The program uses the Mediapipe library to detect landmarks on the hand and fingers of the user in real-time. These landmarks are then fed into a feedforward neural network (FNN) that was trained on an Indian Sign Language (ISL) dataset from Kaggle. The FNN predicts the class of the hand gesture based on the detected landmarks.
-
-During execution, the program uses the webcam to capture video frames, applies the Mediapipe hand detection model to detect the hand in each frame, and extracts the hand landmarks. The extracted landmarks are then passed to the classification model, which predicts the class of the hand gesture. The predicted class is displayed on the video stream in real-time.
-
-![Process image](images/process.png)
-
-## File Descriptions
-
-- `isl_detection.py`: This file is the main python file for real-time ISL detection.
-- `dataset_keypoint_generation.py`: This file converts [ISL kaggle image dataset](https://www.kaggle.com/datasets/prathumarikeri/indian-sign-language-isl) to 42 landmarks.
-- `keypoint.csv`: This file contains the 42 landmarks for all images.
-- `ISL_classifier.ipynb`: The notebook is used to create a classifier model to classify the hand gestures.
-- `model.h5`: This is the classifier model.
-
-### Examples
-![example image 1](images/example1.png)
-![example image 2](images/example2.png)
-
-### Future Improvements
-
-The following improvements can be made to the project:
-
-- Expand the dataset to include more examples of each ISL gesture to improve the accuracy of the classification model.
-- Implement a more sophisticated model architecture, such as a convolutional neural network (CNN), to improve the accuracy of the classification model.
-- Add support for more ISL gestures.
-- Implement a feature to convert the recognized gestures into text or speech.
-- Make the program more user-friendly by adding a GUI.
-
+Email:haindavisira@gmail.com
